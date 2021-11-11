@@ -24,7 +24,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.MapGet("/AVS/GetAccount", async (IAzureVideoIndexerService service) => await  service.GetAccountAccessTokenAsync()).WithName("GetAccount");
 
-app.MapGet("/AVS/IndexVideosWithUpload", async (IAzureVideoIndexerService Azureservice , IBlobContainerService blobService , string path) =>
+app.MapGet("/AVS/IndexVideosWithUploadFolder", async (IAzureVideoIndexerService Azureservice , IBlobContainerService blobService , string path) =>
 {
     var files = Directory.GetFiles(path);
     foreach (var file in files)
@@ -33,10 +33,20 @@ app.MapGet("/AVS/IndexVideosWithUpload", async (IAzureVideoIndexerService Azures
         await blobService.UploadFileAsync(file, name);
         string sasUrl = blobService.GetBlobReadSas(name);
         await Azureservice.IndexAsync(sasUrl, name);
-        Thread.Sleep(10000);
+ 
     }
 
-}).WithName("IndexVideosWithUpload");
+}).WithName("IndexVideosWithUploadFolder");
+
+app.MapGet("/AVS/IndexVideosWithFilePath", async (IAzureVideoIndexerService Azureservice, IBlobContainerService blobService, string filepath) =>
+{
+    var name = Path.GetFileName(filepath);
+    await blobService.UploadFileAsync(filepath, name);
+    string sasUrl = blobService.GetBlobReadSas(name);
+    await Azureservice.IndexAsync(sasUrl, name);
+
+}).WithName("IndexVideosWithFilePath");
+
 
 app.MapGet("/AVS/ListVideos", async (IAzureVideoIndexerService service) =>
 {
