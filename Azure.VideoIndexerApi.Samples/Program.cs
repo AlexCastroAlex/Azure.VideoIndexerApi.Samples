@@ -12,6 +12,7 @@ builder.Services.Configure<VideoIndexerConfig>(builder.Configuration.GetSection(
 builder.Services.Configure<BlobConfig>(builder.Configuration.GetSection("BlobConfig"));
 builder.Services.AddTransient<IAzureVideoIndexerService, AzureVideoIndexerService>();
 builder.Services.AddTransient<IBlobContainerService, BlobContainerService>();
+builder.Services.AddTransient<IAzureSearchService, AzureSearchService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -60,6 +61,11 @@ app.MapGet("/AVS/SearchVideo", async (IAzureVideoIndexerService service,string n
     return Results.Ok(results.results);
 }).WithName("SearchVideo");
 
+app.MapGet("/ASS/SearchDocuments", async (IAzureSearchService service,string name) => 
+{
+    await service.GetAllDocuments();
+   
+}).WithName("SearchDocuments");
 
 
 
