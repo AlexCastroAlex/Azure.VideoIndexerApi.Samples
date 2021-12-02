@@ -67,6 +67,17 @@ app.MapGet("/ASS/SearchDocuments", async (IAzureSearchService service,string nam
    
 }).WithName("SearchDocuments");
 
+app.MapGet("/ASS/IndexDocumentWithFilePath", async (IAzureSearchService service, string filepath) =>
+{
+   await service.AddDocumentToBlobAndIndex(filepath);
+
+}).WithName("IndexDocumentWithFilePath");
+
+app.MapGet("/ASS/Suggest", async (IAzureSearchService service,bool highlights,bool fuzzy, string term) =>
+{
+    return await service.SuggestAsync(highlights, fuzzy, term); ;
+
+}).WithName("Suggest");
 
 
 app.Run();
